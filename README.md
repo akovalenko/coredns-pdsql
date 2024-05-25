@@ -9,6 +9,17 @@ repo: "https://github.com/wenerme/coredns-pdsql"
 home: "https://github.com/wenerme/coredns-pdsql/blob/master/README.md"
 ---
 
+# this fork of pdsql
+
+For pdsql to work with sqlite properly, I have to use newer
+[gorm](https://gorm.io).  Its architecture changed a bit , so dialects
+are not registered under names, but passed to `gorm.Open` as
+`gorm.Dialector`s. I adapted `setup.go` to include all the drivers I
+might need: [pure-Go sqlite3](https://github.com/glebarez/sqlite), and
+the standard gorm `postgres` and `mysql` drivers. Hence no need to add
+them to coredns `plugin.cfg` anymore, and you can't add a driver and
+have it supported automatically, like it was in the original version.
+
 # pdsql
 
 *pdsql* use PowerDNS [generic sql](https://github.com/PowerDNS/pdns/tree/master/pdns/backends/gsql) as backend.
@@ -100,4 +111,3 @@ first.example.test.	3600	IN	A	192.168.1.1
 ## TODO
 
 * [x] support wildcard record
-
