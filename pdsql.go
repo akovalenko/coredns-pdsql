@@ -2,16 +2,16 @@
 package pdsql
 
 import (
-	"github.com/wenerme/coredns-pdsql/pdnsmodel"
+	"github.com/akovalenko/coredns-pdsql/pdnsmodel"
 	"net"
 	"strconv"
 	"strings"
+	"context"
 
 	"github.com/coredns/coredns/plugin"
 	"github.com/coredns/coredns/request"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"github.com/miekg/dns"
-	"golang.org/x/net/context"
 )
 
 const Name = "pdsql"

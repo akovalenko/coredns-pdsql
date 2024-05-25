@@ -1,13 +1,18 @@
 package pdsql
 
 import (
-	"github.com/wenerme/coredns-pdsql/pdnsmodel"
+	"fmt"
 	"log"
+
+	"github.com/akovalenko/coredns-pdsql/pdnsmodel"
 
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
-	"github.com/jinzhu/gorm"
+	"github.com/glebarez/sqlite"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func init() {
@@ -15,6 +20,12 @@ func init() {
 		ServerType: "dns",
 		Action:     setup,
 	})
+}
+
+var dialects = map[string]func(string) gorm.Dialector{
+	"postgres": postgres.Open,
+	"mysql":    mysql.Open,
+	"sqlite3":  sqlite.Open,
 }
 
 func setup(c *caddy.Controller) error {
@@ -30,7 +41,12 @@ func setup(c *caddy.Controller) error {
 	}
 	arg := c.Val()
 
-	db, err := gorm.Open(dialect, arg)
+	dlct, ok := dialects[dialect]
+	if !ok {
+		return fmt.Errorf("Unknown dialect: %v", dialect)
+	}
+
+	db, err := gorm.Open(dlct(arg))
 	if err != nil {
 		return err
 	}
@@ -74,5 +90,5 @@ func setup(c *caddy.Controller) error {
 }
 
 func (pdb PowerDNSGenericSQLBackend) AutoMigrate() error {
-	return pdb.DB.AutoMigrate(&pdnsmodel.Record{}, &pdnsmodel.Domain{}).Error
+	return pdb.DB.AutoMigrate(&pdnsmodel.Record{}, &pdnsmodel.Domain{})
 }
