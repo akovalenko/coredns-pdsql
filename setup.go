@@ -25,6 +25,7 @@ func init() {
 var dialects = map[string]func(string) gorm.Dialector{
 	"postgres": postgres.Open,
 	"mysql":    mysql.Open,
+	"sqlite":  sqlite.Open,
 	"sqlite3":  sqlite.Open,
 }
 
